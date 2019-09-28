@@ -1,6 +1,5 @@
 package com.example.phonepequiz.ui
 
-import android.database.DatabaseUtils
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -36,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        logoViewModel.question.observe(this, Observer {
+        logoViewModel.questionLiveData.observe(this, Observer {
             Glide.with(this@MainActivity).load(it.logo.imageUrl).into(dataBinding.logoView)
             characterAdapter.characterList = it.jumbledAnswer as MutableList<Char>
             characterAdapter.notifyDataSetChanged()

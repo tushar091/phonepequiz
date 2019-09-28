@@ -19,10 +19,13 @@ class LogoViewModel : ViewModel() {
 
     private var logoRepository: LogoRepository = LogoRepository()
     private var gameState: GameState
+    private var pasuseQueued = true
+    //data-binding
     var timerText = ObservableField<String>()
     var timer: CountDownTimer? = null
+    //notify-view
     var uiActions = MutableLiveData<Int>()
-    var question = MutableLiveData<Questions>()
+    var questionLiveData = MutableLiveData<Questions>()
 
     init {
         val logoList = logoRepository.fetchLogoList()
@@ -36,25 +39,32 @@ class LogoViewModel : ViewModel() {
             )
             question
         }
-        gameState = GameState(false, 0, questions, 0)
+        gameState = GameState(false, questions, 0, false)
     }
 
     fun startGame() {
         startTimer()
-        gameState.attemptedQues++
         showQuestion()
     }
 
-    fun pauseGame() {
-        gameState.isPaused = true
+    fun queuePause() {
+        pasuseQueued = true
+    }
+
+    private fun pauseGame() {
+        pasuseQueued = true
     }
 
     fun captureUserAnswer(answer: String) {
         timer?.cancel()
-        takeUserToNextQuestion()
+        if (pasuseQueued) {
+            pauseGame()
+        } else {
+            takeUserToNextQuestion()
+        }
     }
 
-    fun startTimer() {
+    private fun startTimer() {
         timer = object : CountDownTimer(TIMER_TIME, 1) {
             override fun onFinish() {
                 handleTimeOver()
@@ -68,21 +78,27 @@ class LogoViewModel : ViewModel() {
     }
 
     fun handleTimeOver() {
-
+        takeUserToNextQuestion()
     }
 
-    fun takeUserToNextQuestion() {
-        if (gameState.attemptedQues == gameState.questionList?.size) {
+    private fun takeUserToNextQuestion() {
+        if (gameState.currentQuestionIndex == gameState.questionList?.size) {
+            gameState.isGameOver = true
             showResultScreen()
+            return
         }
+        startTimer()
+        showQuestion()
     }
 
-    fun showResultScreen() {
+    private fun showResultScreen() {
         uiActions.postValue(TAKE_TO_RESULT)
     }
 
-    fun showQuestion(){
-
+    private fun showQuestion() {
+        gameState.apply {
+            questionLiveData.postValue(questionList?.get(currentQuestionIndex++))
+        }
     }
 
 

@@ -38,6 +38,7 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:onClick="@{()->viewModel.queuePause()}"
             android:text="@string/pause_game"
             android:id="@+id/pause_game"
             android:layout_width="wrap_content"

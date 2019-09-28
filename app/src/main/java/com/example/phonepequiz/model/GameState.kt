@@ -2,8 +2,7 @@ package com.example.phonepequiz.model
 
 data class GameState(
     var isPaused: Boolean,
-    var attemptedQues: Int = 0,
     var questionList: List<Questions>? = null,
-    var currentQuestionIndex: Int,
+    var currentQuestionIndex: Int = 0,
     var isGameOver: Boolean
 )
