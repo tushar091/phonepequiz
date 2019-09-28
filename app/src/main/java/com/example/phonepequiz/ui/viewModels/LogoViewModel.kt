@@ -19,6 +19,7 @@ class LogoViewModel : ViewModel() {
 
     private var logoRepository: LogoRepository = LogoRepository()
     private var gameState: GameState
+    private var questionList: List<Questions>?
     private var pasuseQueued = true
     //data-binding
     var timerText = ObservableField<String>()
@@ -29,7 +30,7 @@ class LogoViewModel : ViewModel() {
 
     init {
         val logoList = logoRepository.fetchLogoList()
-        val questions = logoList?.map {
+        questionList = logoList?.map {
             val question = Questions(
                 it, EMPTY_STRING,
                 isAttempted = false,
@@ -39,7 +40,7 @@ class LogoViewModel : ViewModel() {
             )
             question
         }
-        gameState = GameState(false, questions, 0, false)
+        gameState = GameState(false, 0, false, 0, 0, 0)
     }
 
     fun startGame() {
@@ -57,6 +58,8 @@ class LogoViewModel : ViewModel() {
 
     fun captureUserAnswer(answer: String) {
         timer?.cancel()
+        questionList?.get(gameState.currentQuestionIndex)?.userAnswer = answer
+        questionList?.get(gameState.currentQuestionIndex)?.timeTaken = timerText.get()?.toInt() ?: 0
         if (pasuseQueued) {
             pauseGame()
         } else {
@@ -82,7 +85,7 @@ class LogoViewModel : ViewModel() {
     }
 
     private fun takeUserToNextQuestion() {
-        if (gameState.currentQuestionIndex == gameState.questionList?.size) {
+        if (gameState.currentQuestionIndex == questionList?.size) {
             gameState.isGameOver = true
             showResultScreen()
             return

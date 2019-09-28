@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 
-public fun jumbleSequence(name: String): List<Char> {
+fun jumbleSequence(name: String?): List<Char> {
     val chars = mutableListOf<Char>()
 
     for (ch in name.toCharArray()) {
