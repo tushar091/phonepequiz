@@ -58,8 +58,14 @@ class LogoViewModel : ViewModel() {
 
     fun captureUserAnswer(answer: String) {
         timer?.cancel()
-        questionList?.get(gameState.currentQuestionIndex)?.userAnswer = answer
-        questionList?.get(gameState.currentQuestionIndex)?.timeTaken = timerText.get()?.toInt() ?: 0
+        val currentQuestion = questionList?.get(gameState.currentQuestionIndex)
+        currentQuestion?.userAnswer = answer
+        currentQuestion?.timeTaken = timerText.get()?.toInt() ?: 0
+        if (answer == currentQuestion?.logo?.name) {
+            gameState.correctAnswerCount++
+        } else {
+            gameState.wrongAnswerCount++
+        }
         if (pasuseQueued) {
             pauseGame()
         } else {
